@@ -4,8 +4,8 @@ import numpy as np
 from tqdm import tqdm
 
 
-def preprocessing_train_test(df, mode="train"):
-    data_path = pathlib.Path.cwd() / "data/input/"
+def preprocessing(df, mode="train"):
+    data_path = pathlib.Path("/Users/goudashuuhei/Desktop/atmaCup5/data/input/")
     fitting = pd.read_csv(data_path / "fitting.csv")
     df = pd.merge(df, fitting, on="spectrum_id", how="left")
     return df
