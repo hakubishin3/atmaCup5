@@ -11,9 +11,25 @@ def preprocessing(df, mode="train"):
     return df
 
 
+def make_spectrum_raw_df():
+    p_temp = pathlib.Path('./data/input/spectrum_raw')
+
+    spec = []
+    for file in p_temp.iterdir():
+        spec_df = pd.read_csv(file, sep='\t', header=None)
+        spec_df.columns = ["wavelength", "intensity"]
+        spec_df["spectrum_filename"] = file.stem + ".dat"
+        spec.append(spec_df)
+
+    spec_df = pd.concat(spec, axis=0)
+    spec_df.to_csv("./data/input/spectrum.csv", header=True, index=False)
+
+
 if __name__ == '__main__':
     train = pd.read_csv("./data/input/train.csv")
-    print(preprocessing_train_test(train, "train").shape)
+    print(preprocessing(train, "train").shape)
 
     test = pd.read_csv("./data/input/test.csv")
-    print(preprocessing_train_test(test, "test").shape)
+    print(preprocessing(test, "test").shape)
+
+    make_spectrum_raw_df()

@@ -4,7 +4,6 @@ import pathlib
 import pandas as pd
 from base import Feature
 from contextlib import contextmanager
-from sklearn.preprocessing import LabelEncoder
 
 sys.path.append('../')
 from src.utils import get_logger
