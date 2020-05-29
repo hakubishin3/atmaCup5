@@ -1,7 +1,7 @@
 import pathlib
 import numpy as np
 import pandas as pd
-from sklearn.metrics import log_loss
+from sklearn.metrics import average_precision_score
 from typing import Union, Optional, List, Tuple, Callable
 from models.base import Base_Model
 
@@ -16,7 +16,7 @@ class Runner(object):
         self.n_fold = None
 
     def calc_metrics(self, true, preds):
-        return log_loss(true, preds)
+        return average_precision_score(true, preds)
 
     def build_model(self, i_fold):
         run_fold_name = f'{self.run_name}_{i_fold}'
