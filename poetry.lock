@@ -66,6 +66,17 @@ six = "*"
 
 [[package]]
 category = "main"
+description = "Simple wrapper library to the Apache Arrow-based Feather File Format"
+name = "feather-format"
+optional = false
+python-versions = "*"
+version = "0.4.1"
+
+[package.dependencies]
+pyarrow = ">=0.4.0"
+
+[[package]]
+category = "main"
 description = "Clean single-source support for Python 3 and 2"
 name = "future"
 optional = false
@@ -415,17 +426,16 @@ category = "main"
 description = "A set of python modules for machine learning and data mining"
 name = "scikit-learn"
 optional = false
-python-versions = ">=3.6"
-version = "0.23.1"
+python-versions = ">=3.5"
+version = "0.22.2"
 
 [package.dependencies]
 joblib = ">=0.11"
-numpy = ">=1.13.3"
-scipy = ">=0.19.1"
-threadpoolctl = ">=2.0.0"
+numpy = ">=1.11.0"
+scipy = ">=0.17.0"
 
 [package.extras]
-alldeps = ["numpy (>=1.13.3)", "scipy (>=0.19.1)"]
+alldeps = ["numpy (>=1.11.0)", "scipy (>=0.17.0)"]
 
 [[package]]
 category = "main"
@@ -531,14 +541,6 @@ version = "1.1.0"
 
 [[package]]
 category = "main"
-description = "threadpoolctl"
-name = "threadpoolctl"
-optional = false
-python-versions = ">=3.5"
-version = "2.1.0"
-
-[[package]]
-category = "main"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
 name = "torch"
 optional = false
@@ -607,7 +609,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "3b861dabbe05dc2ab0614293076722709087c660638d77f7b83051840213e4f9"
+content-hash = "c608e02071972b6dcf43296e9908e60a49c139f010d3b43c1f5b40c3c1099a12"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -637,6 +639,9 @@ click = [
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
+]
+feather-format = [
+    {file = "feather-format-0.4.1.tar.gz", hash = "sha256:45f67e3745d394d4f160ca6d636bbfd4f8b68d01199dc1649b6e487d3e878903"},
 ]
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
@@ -930,22 +935,21 @@ rsa = [
     {file = "rsa-4.0.tar.gz", hash = "sha256:1a836406405730121ae9823e19c6e806c62bbad73f890574fff50efa4122c487"},
 ]
 scikit-learn = [
-    {file = "scikit-learn-0.23.1.tar.gz", hash = "sha256:e3fec1c8831f8f93ad85581ca29ca1bb88e2da377fb097cf8322aa89c21bc9b8"},
-    {file = "scikit_learn-0.23.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:058d213092de4384710137af1300ed0ff030b8c40459a6c6f73c31ccd274cc39"},
-    {file = "scikit_learn-0.23.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:ebe853e6f318f9d8b3b74dd17e553720d35646eff675a69eeaed12fbbbb07daa"},
-    {file = "scikit_learn-0.23.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:e9879ba9e64ec3add41bf201e06034162f853652ef4849b361d73b0deb3153ad"},
-    {file = "scikit_learn-0.23.1-cp36-cp36m-win32.whl", hash = "sha256:c2fa33d20408b513cf432505c80e6eb4bf4d71434f1ae36680765d4a2c2a16ec"},
-    {file = "scikit_learn-0.23.1-cp36-cp36m-win_amd64.whl", hash = "sha256:e585682e37f2faa81ad6cd4472fff646bf2fd0542147bec93697a905db8e6bd2"},
-    {file = "scikit_learn-0.23.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:244ca85d6eba17a1e6e8a66ab2f584be6a7784b5f59297e3d7ff8c7983af627c"},
-    {file = "scikit_learn-0.23.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:9e04c0811ea92931ee8490d638171b8cb2f21387efcfff526bbc8c2a3da60f1c"},
-    {file = "scikit_learn-0.23.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:0e7b55f73b35537ecd0d19df29dd39aa9e076dba78f3507b8136c819d84611fd"},
-    {file = "scikit_learn-0.23.1-cp37-cp37m-win32.whl", hash = "sha256:bded94236e16774385202cafd26190ce96db18e4dc21e99473848c61e4fdc400"},
-    {file = "scikit_learn-0.23.1-cp37-cp37m-win_amd64.whl", hash = "sha256:04799686060ecbf8992f26a35be1d99e981894c8c7860c1365cda4200f954a16"},
-    {file = "scikit_learn-0.23.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:0c3464e46ef8bd4f1bfa5c009648c6449412c8f7e9b3fc0c9e3d800139c48827"},
-    {file = "scikit_learn-0.23.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:93f56abd316d131645559ec0ab4f45e3391c2ccdd4eadaa4912f4c1e0a6f2c96"},
-    {file = "scikit_learn-0.23.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3e6e92b495eee193a8fa12a230c9b7976ea0fc1263719338e35c986ea1e42cff"},
-    {file = "scikit_learn-0.23.1-cp38-cp38-win32.whl", hash = "sha256:5bcea4d6ee431c814261117281363208408aa4e665633655895feb059021aca6"},
-    {file = "scikit_learn-0.23.1-cp38-cp38-win_amd64.whl", hash = "sha256:16feae4361be6b299d4d08df5a30956b4bfc8eadf173fe9258f6d59630f851d4"},
+    {file = "scikit_learn-0.22.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:c3be9ec4ec1af862864b9ffc9ec429de9fa28119e9fb88c542fefce8e31cadd3"},
+    {file = "scikit_learn-0.22.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:13cdde64430bb48c8ac7a36244f3b4b2ddded8d3b207af317e460a593f566c69"},
+    {file = "scikit_learn-0.22.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:bc8b37ca0de794838376cffddab69a46a9a54c4330800ea1f93cab61ca67dfa3"},
+    {file = "scikit_learn-0.22.2-cp36-cp36m-win32.whl", hash = "sha256:045702fc87c7c022daac10e52f8cea355e28c7ecacf142820f49605f956d0fca"},
+    {file = "scikit_learn-0.22.2-cp36-cp36m-win_amd64.whl", hash = "sha256:af7649de54d3a5bf7dbc79430fb6ecb5c983c9d1521012800cd06276bc82062a"},
+    {file = "scikit_learn-0.22.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:5cd163b69d0f7f0ea6405dcb4eb9c96d40dc2a4798c9aef6a607482d0cc6e9d0"},
+    {file = "scikit_learn-0.22.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:c54086447dafc62a2c8887abe48d048ba34e17f34b6ad6199c250a29e016c8b7"},
+    {file = "scikit_learn-0.22.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f827963b0fc5c08152a4f2c32a91b9ba63254f395420a10a731b9d1b0c2977f8"},
+    {file = "scikit_learn-0.22.2-cp37-cp37m-win32.whl", hash = "sha256:1931bd555497cc98a919bfc25a29c100a539f708e424f4389bb414402b777079"},
+    {file = "scikit_learn-0.22.2-cp37-cp37m-win_amd64.whl", hash = "sha256:1527c8a7ab2cbd0fe27801eb3bcd5df30646f4b22b7eb445eff69096ed35bd6f"},
+    {file = "scikit_learn-0.22.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6caaa33e9ce65bd949efdb1cd6b6b225ae79c85f84d725fc9e47063e7c024567"},
+    {file = "scikit_learn-0.22.2-cp38-cp38-manylinux1_i686.whl", hash = "sha256:e6994e41e6df39ea4603b00e0b328689bbcdee53b50a18fce5e4451949064fd1"},
+    {file = "scikit_learn-0.22.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3e726678a175ff0ddeb841297893881fdb6c0e9263a9e340dca0c7bc71b4311f"},
+    {file = "scikit_learn-0.22.2-cp38-cp38-win32.whl", hash = "sha256:f18a243c52d38f192e21b82e6147bfc2ddfeddb172c109530f68100c21b8c606"},
+    {file = "scikit_learn-0.22.2-cp38-cp38-win_amd64.whl", hash = "sha256:2019a7a1c27a013cf5ecea4e784f1f1cbdb978907baa888e5015fa9ed1d992e6"},
 ]
 scipy = [
     {file = "scipy-1.4.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:c5cac0c0387272ee0e789e94a570ac51deb01c796b37fb2aad1fb13f85e2f97d"},
@@ -1000,10 +1004,6 @@ tensorflow-estimator = [
 ]
 termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
-]
-threadpoolctl = [
-    {file = "threadpoolctl-2.1.0-py3-none-any.whl", hash = "sha256:38b74ca20ff3bb42caca8b00055111d74159ee95c4370882bbff2b93d24da725"},
-    {file = "threadpoolctl-2.1.0.tar.gz", hash = "sha256:ddc57c96a38beb63db45d6c159b5ab07b6bced12c45a1f07b2b92f272aebfa6b"},
 ]
 torch = [
     {file = "torch-1.5.0-cp27-none-macosx_10_7_x86_64.whl", hash = "sha256:6fcfe5deaf0788bbe8639869d3c752ff5fe1bdedce11c7ed2d44379b1fbe6d6c"},
