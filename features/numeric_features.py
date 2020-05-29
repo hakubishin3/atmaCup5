@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 
 sys.path.append('../')
 from src.utils import get_logger
+from src.preprocessor import preprocessing
 
 
 # =========================================
@@ -22,10 +23,19 @@ TEST_NAME = 'test.csv'
 # =========================================
 # === Settings
 # =========================================
-categorical_features = [
-    # 'chip_id',
-    'exc_wl',
-    'layout_a',
+numeric_features = [
+    "layout_x",
+    "layout_y",
+    "pos_x",
+    "params0",
+    "params1",
+    "params2",
+    "params3",
+    "params4",
+    "params5",
+    "params6",
+    "rms",
+    "beta",
 ]
 
 
@@ -39,39 +49,30 @@ def timer(logger, name):
     logger.info(f"[{name}] done in {time.time() - t0:.0f} s")
 
 
-def label_encoding(col, train, test):
-    le = LabelEncoder()
-    train_label = list(train[col].astype(str).values)
-    test_label = list(test[col].astype(str).values)
-    total_label = train_label + test_label
-    le.fit(total_label)
-    train_feature = le.transform(train_label)
-    test_feature = le.transform(test_label)
-
-    return train_feature, test_feature
-
-
 # =========================================
 # === Feature Class 
 # =========================================
-class LabelEncoding(Feature):
+class NumericFeatures(Feature):
     def categorical_features(self):
-        return categorical_features
+        return []
 
     def create_features(self):
-        logger = get_logger(__name__)
+        logger = get_logger(self.__class__.__name__)
 
         with timer(logger, 'loading data'):
             train = pd.read_csv(DATA_DIR / TRAIN_NAME)
             test = pd.read_csv(DATA_DIR / TEST_NAME)
 
-        with timer(logger, 'label encoding'):
-            for col in categorical_features:
-                train_result, test_result = label_encoding(col, train, test)
-                self.train_feature[col] = train_result
-                self.test_feature[col] = test_result
+        with timer(logger, 'preprocessing'):
+            train = preprocessing(train)
+            test = preprocessing(test)
+
+        with timer(logger, 'get numeric features'):
+            for col in numeric_features:
+                self.train_feature[col] = train[col]
+                self.test_feature[col] = test[col]
 
 
 if __name__ == "__main__":
-    f = LabelEncoding(path=FE_DIR)
+    f = NumericFeatures(path=FE_DIR)
     f.run().save()
