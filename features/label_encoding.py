@@ -26,6 +26,8 @@ categorical_features = [
     # 'chip_id',
     'exc_wl',
     'layout_a',
+    "layout_x",
+    "layout_y"
 ]
 
 
