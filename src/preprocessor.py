@@ -25,6 +25,36 @@ def make_spectrum_raw_df():
     spec_df.to_csv("./data/input/spectrum.csv", header=True, index=False)
 
 
+def make_spectrum_raw_df_stack(train, test):
+
+    import os
+    def read_spectrum(name):
+        path = os.path.join('./data/input/spectrum_raw/', name)
+
+        if not os.path.exists(path):
+            raise ValueError(f'{name} is not found at spectrum raw dir {path}')
+
+        return pd.read_csv(path, header=None, sep='\t')
+
+    total = train.append(test).reset_index(drop=True)
+    data = total['spectrum_filename'].map(read_spectrum)
+
+    wave_df = pd.DataFrame()
+
+    for k, v in data.items():
+        value = v.values[:, 1]
+        if len(value) != 512:
+            value = np.hstack([value, np.array(np.mean(value))])
+
+        wave_df[k] = value
+
+    wave_df = wave_df.T
+    wave_df.index = total['spectrum_filename']
+    wave_df.columns = [f"wavelength_{i}" for i in wave_df.columns]
+    wave_df = wave_df.reset_index()
+    wave_df.to_csv("./data/input/spectrum_stack.csv", header=True, index=False)
+
+
 if __name__ == '__main__':
     train = pd.read_csv("./data/input/train.csv")
     print(preprocessing(train, "train").shape)
@@ -32,4 +62,4 @@ if __name__ == '__main__':
     test = pd.read_csv("./data/input/test.csv")
     print(preprocessing(test, "test").shape)
 
-    make_spectrum_raw_df()
+    make_spectrum_raw_df_stack(train, test)
