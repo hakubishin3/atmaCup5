@@ -144,6 +144,11 @@ def main():
     # =========================================
     logger.info('Train model and predict')
 
+    # Get features
+    x_train, x_test = load_features(config)
+    feature_name = x_test.columns
+    logger.debug(f'number of features: {len(feature_name)}')
+
     # Get folds
     folds_ids = Fold(
         n_splits=config['cv']['n_splits'],
