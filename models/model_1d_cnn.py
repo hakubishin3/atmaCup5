@@ -116,7 +116,7 @@ class Model_1DCNN(Base_Model):
         y_val = y_val[:100]
         """
 
-        pr_auc = AUC(curve='PR', num_thresholds=10000)
+        pr_auc = AUC(curve='PR', num_thresholds=10000, name="pr_auc")
         cnn_model_params = self.params["model_params"]
         optimizer = optimizers.Adam(lr=cnn_model_params["lr"])
         model = build_model(
@@ -130,7 +130,7 @@ class Model_1DCNN(Base_Model):
             metrics=[pr_auc],
         )
 
-        save_path = "/Users/goudashuuhei/Desktop/atmaCup5/"
+        save_path = "./data/output/.tensorlog/"
 
         trn_gen = DataGenerator(
             {
@@ -148,11 +148,11 @@ class Model_1DCNN(Base_Model):
             batch_size=cnn_model_params["batch_size"],
             callbacks=[
                 ModelCheckpoint(
-                    filepath=save_path + self.run_fold_name + '_weights-{epoch:02d}-{val_auc:.2f}.hdf5',
-                    monitor='val_auc', verbose=1, save_best_only=True, mode='max'
+                    filepath=save_path + self.run_fold_name + '_weights-{epoch:02d}-{val_pr_auc:.2f}.hdf5',
+                    monitor='val_pr_auc', verbose=1, save_best_only=True, mode='max'
                 ),
                 EarlyStopping(
-                    monitor='val_auc',
+                    monitor='val_pr_auc',
                     patience=cnn_model_params["patience"],
                     mode="max"
                 )
@@ -170,7 +170,7 @@ class Model_1DCNN(Base_Model):
         meta_cols = [c for c in x.columns if c not in wv_cols]
 
         signal = x[wv_cols].values.reshape(-1, 512, 1)
-        meta = x[meta_cols]
+        meta = x[meta_cols].values
 
         return self.model.predict({
                 "input_signal": signal,

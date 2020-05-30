@@ -4,7 +4,7 @@ import argparse
 import pandas as pd
 import numpy as np
 from src.get_folds import Fold
-from src.runner_NN import Runner
+from src.runner import Runner
 from src.utils import get_logger, json_dump, seed_everything
 from src.submission import create_submission
 from features.base import load_features
@@ -123,7 +123,7 @@ def main():
 
     oof_preds, evals_result = runner.train_cv(x_train, y_train, folds_ids)
     config.update(evals_result)
-    test_preds = runner.predict_cv(test_spectrum)
+    test_preds = runner.predict_cv(x_test)
 
     # =========================================
     # === Make submission file
