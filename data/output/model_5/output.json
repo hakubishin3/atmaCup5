@@ -1,0 +1,117 @@
+{
+    "features": [
+        "LabelEncoding",
+        "NumericFeatures",
+        "IntensityFeatures",
+        "IntensityDiffFeatures"
+    ],
+    "data_type": {
+        "target": "target"
+    },
+    "cv": {
+        "n_splits": 5,
+        "shuffle": true,
+        "random_state": 71
+    },
+    "adversarial_validation": {
+        "lgb_model_params": {
+            "objective": "binary",
+            "metric": "auc",
+            "boosting": "gbdt",
+            "max_depth": 5,
+            "num_leaves": 50,
+            "learning_rate": 0.1,
+            "colsample_bytree": 0.7,
+            "subsample": 0.1,
+            "subsample_freq": 1,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "lgb_train_params": {
+            "num_boost_round": 1000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 100
+        }
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "None",
+            "learning_rate": 0.1,
+            "max_depth": 5,
+            "colsample_bytree": 0.7,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1,
+            "nthread": 12
+        },
+        "train_params": {
+            "num_boost_round": 5000,
+            "early_stopping_rounds": 200,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "configs/model_5.json",
+        "debug": false
+    },
+    "model_output_dir": "data/output/model_5",
+    "adversarial_validation_result": {
+        "score": {
+            "train": {
+                "auc": 0.8672850972685204
+            },
+            "valid": {
+                "auc": 0.8412753792663913
+            }
+        },
+        "feature_importances": {
+            "NumericFeatures_params0": 1052.1976476237178,
+            "NumericFeatures_params2": 673.4458682835102,
+            "NumericFeatures_rms": 605.8519040346146,
+            "NumericFeatures_params5": 542.1517714858055,
+            "IntensityDiffFeatures_amax": 445.04606696777046,
+            "NumericFeatures_pos_x": 364.1293775625527,
+            "IntensityFeatures_amax": 332.97484992444515,
+            "NumericFeatures_params3": 299.4949107170105,
+            "IntensityFeatures_fwhm_1": 291.1893072128296,
+            "NumericFeatures_params6": 281.5072286128998,
+            "NumericFeatures_layout_y": 256.25062251091003,
+            "IntensityFeatures_fwhm_diff_1_1.5": 255.3519750237465,
+            "LabelEncoding_layout_y": 232.61925268173218,
+            "NumericFeatures_beta": 192.74193900823593,
+            "NumericFeatures_params4": 190.75460970401764,
+            "IntensityFeatures_fwhm_1.5": 190.23640930652618,
+            "NumericFeatures_params1": 165.441568903625,
+            "NumericFeatures_layout_x": 156.49124512076378,
+            "LabelEncoding_exc_wl": 126.97586989402771,
+            "LabelEncoding_layout_x": 106.51477324962616
+        }
+    },
+    "evals_result": {
+        "n_data": 7436,
+        "n_features": 22,
+        "oof_score": 0.8656257773800947,
+        "cv_score": {
+            "cv1": 0.8727459787642522,
+            "cv2": 0.8601038311208742,
+            "cv3": 0.8485258223121023,
+            "cv4": 0.897800524286428,
+            "cv5": 0.9176272648634345
+        },
+        "best_iteration": 301.0
+    }
+}
