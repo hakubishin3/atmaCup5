@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from scipy.stats import skew, kurtosis
 from scipy import signal
 from tqdm import tqdm
+from scipy.interpolate import UnivariateSpline
 
 sys.path.append('../')
 from src.utils import get_logger
@@ -92,22 +93,59 @@ class IntensityFeatures(Feature):
             self.train_feature["fwhm_diff_1_1.5"] = self.train_feature["fwhm_1"] - self.train_feature["fwhm_1.5"]
             self.test_feature["fwhm_diff_1_1.5"] = self.test_feature["fwhm_1"] - self.test_feature["fwhm_1.5"]
 
-        """
-        with timer(logger, "get peak"):
+        with timer(logger, "get fwhm v2"):
+            spectrum["intensity_sub_half"] = spectrum["intensity"] - spectrum["half_intensity"]
+
             spectrum_filenames = spectrum["spectrum_filename"].unique()
             result = []
             for spectrum_filename in tqdm(spectrum_filenames):
-                x = spectrum.query("spectrum_filename == @spectrum_filename")["intensity"].values
-                n_peak = len(signal.argrelmax(x, order=50))
-                result.append((spectrum_filename, n_peak))
+                tmp = spectrum[spectrum["spectrum_filename"] == spectrum_filename]
+                spline = UnivariateSpline(tmp["wavelength"], tmp["intensity_sub_half"], s=0)
+                roots = spline.roots()
+                dist_list = []
+                for j in range(len(roots)//2):
+                    left = roots[j*2]
+                    right = roots[j*2+1]
+                    dist = right - left
+                    dist_list.append(dist)
 
-            result = pd.DataFrame(result, columns=["spectrum_filename", "n_peak"])
+                dists = np.array(dist_list)
+                n_peak = len(dists)
+                if n_peak > 0:
+                    min_dist = np.min(dists)
+                    max_dist = np.max(dists)
+                    mean_dist = np.mean(dists)
+                    median_dist = np.median(dists)
+                    max_min_dist = max_dist - min_dist
+                    mean_min_dist = mean_dist - min_dist
+                else:
+                    min_dist = np.nan
+                    max_dist = np.nan
+                    mean_dist = np.nan
+                    median_dist = np.nan
+                    max_min_dist = np.nan
+                    mean_min_dist = np.nan
+
+                result.append((
+                    spectrum_filename,
+                    n_peak, min_dist, max_dist,
+                    mean_dist, median_dist, max_min_dist,
+                    mean_min_dist
+                ))
+
+            result = pd.DataFrame(result, columns=[
+                "spectrum_filename",
+                "n_peak", "min_dist", "max_dist",
+                "mean_dist", "median_dist", "max_min_dist",
+                "mean_min_dist"
+            ])
             train = pd.merge(train, result, on="spectrum_filename", how="left")
             test = pd.merge(test, result, on="spectrum_filename", how="left")
-            self.train_feature["n_peak"] = train["n_peak"]
-            self.test_feature["n_peak"] = test["n_peak"]
-            import pdb; pdb.set_trace()
-        """
+
+            for col in result.columns:
+                self.train_feature[col] = train[col]
+                self.test_feature[col] = test[col]
+
 
 if __name__ == "__main__":
     f = IntensityFeatures(path=FE_DIR)
