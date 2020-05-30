@@ -20,13 +20,16 @@ def build_model(signal_size=(512, 1), meta_size=5, output_size=1):
     x = LeakyReLU(alpha=0.1)(x)
     x = GlobalMaxPooling1D()(x)
 
+    """
     x1 = Dense(16, activation='relu', name='dense0')(input_meta)
     x1 = Dense(32, activation='relu', name='dense1')(x1)
     xc = concatenate([x, x1], name='concat')
-
+    """
+    xc = x
     x = Dense(256, activation='relu', name='features')(xc)
     output = Dense(output_size, activation='sigmoid', name='out')(x)
 
-    model = Model([input_signal, input_meta], output)
+    #model = Model([input_signal, input_meta], output)
+    model = Model([input_signal], output)
 
     return model
