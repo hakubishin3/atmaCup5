@@ -50,7 +50,7 @@ class DataGenerator(Sequence):
             _x = self._x[index]
             _y = self._y[index]
             _x = self.cyclic_shift(_x, self._cyclic_shift__alpha)
-            _x = self.skew(_x, self.skew__skew)
+            #_x = self.skew(_x, self.skew__skew)
             #_x, _y = self.mixup(_x, _y, self._x[indexes_mixup[i_mixup]], self._y[indexes_mixup[i_mixup]])
 
             batch_x.append(_x)
@@ -60,12 +60,12 @@ class DataGenerator(Sequence):
             batch_meta_x.append(self.input["input_meta"][index])
 
         return (
-                    {
-                        "input_signal": np.array(batch_x),
-                        #"input_meta": np.array(batch_meta_x)
-                    },
-                    np.array(batch_y)
-                )
+            {
+                "input_signal": np.array(batch_x),
+                "input_meta": np.array(batch_meta_x)
+            },
+            np.array(batch_y)
+        )
 
     def on_epoch_end(self):
         np.random.shuffle(self.indices)
@@ -107,15 +107,6 @@ class Model_1DCNN(Base_Model):
         signal_val = x_val[wv_cols].values.reshape(-1, 512, 1)
         meta_val = x_val[meta_cols].fillna(0).values
 
-        """
-        signal_trn = signal_trn[:100]
-        meta_trn = meta_trn[:100]
-        signal_val = signal_val[:100]
-        meta_val = meta_val[:100]
-        y_trn = y_trn[:100]
-        y_val = y_val[:100]
-        """
-
         pr_auc = AUC(curve='PR', num_thresholds=10000, name="pr_auc")
         cnn_model_params = self.params["model_params"]
         optimizer = optimizers.Adam(lr=cnn_model_params["lr"])
@@ -139,6 +130,7 @@ class Model_1DCNN(Base_Model):
             },
             y_trn,
             batch_size=cnn_model_params["batch_size"],
+            cyclic_shift__alpha=cnn_model_params["cyclic_shift__alpha"]
         )
 
         history = model.fit(
@@ -157,10 +149,9 @@ class Model_1DCNN(Base_Model):
                     mode="max"
                 )
             ],
-            validation_data=({"input_signal":signal_val, "input_meta":meta_val}, y_val),
+            validation_data=({"input_signal": signal_val, "input_meta": meta_val}, y_val),
             verbose=1,
             shuffle=True,
-            max_queue_size=1
         )
 
         self.model = getNewestModel(model, save_path)
@@ -174,7 +165,7 @@ class Model_1DCNN(Base_Model):
 
         return self.model.predict({
                 "input_signal": signal,
-                #"input_meta": meta,
+                "input_meta": meta,
             }).reshape(-1)
 
     def get_feature_importance(self):
