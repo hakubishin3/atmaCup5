@@ -178,6 +178,8 @@ def main():
     save_path = model_output_dir / 'output.json'
     json_dump(config, save_path)
 
+    pd.DataFrame(oof_preds, columns=["target"]).to_csv(model_output_dir/ 'oof.csv', index=False, header=True)
+
 
 if __name__ == '__main__':
     main()
