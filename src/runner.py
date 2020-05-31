@@ -43,6 +43,8 @@ class Runner(object):
         self.n_fold = len(folds_ids)
 
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
+            print(f"fold: {o_fold}")
+
             # Split arrays into train and valid subsets
             x_trn = x_train.iloc[trn_idx]
             y_trn = y_train[trn_idx]
