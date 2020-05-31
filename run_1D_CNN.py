@@ -99,6 +99,25 @@ def main():
     feature_name = x_test.columns
     logger.debug(f'number of features: {len(feature_name)}')
 
+    # =========================================
+    # === features preprocess
+    # =========================================
+    x_total = x_train.append(x_test).reset_index(drop=True)
+    remove_features = [c for c in x_total.columns if c.find("layout_x") != -1]
+    remove_features += [c for c in x_total.columns if c.find("layout_y") != -1]
+    x_total.drop(columns=remove_features, inplace=True)
+
+    x_total = pd.get_dummies(x_total, columns=["LabelEncoding_exc_wl", "LabelEncoding_layout_a"])
+    x_total.fillna(0, inplace=True)
+
+    from sklearn.preprocessing import StandardScaler
+    numeric_features = [c for c in x_total.columns if c.find("LabelEncoding_") == -1]
+    sc = StandardScaler()
+    x_total[numeric_features] = sc.fit_transform(x_total[numeric_features])
+
+    x_train = x_total.iloc[:len(train)]
+    x_test = x_total.iloc[len(train):].reset_index(drop=True)
+
     x_train = pd.concat([x_train, train_spectrum], axis=1)
     x_test = pd.concat([x_test, test_spectrum], axis=1)
     logger.debug(f'number of features with spec: {x_train.shape}')
