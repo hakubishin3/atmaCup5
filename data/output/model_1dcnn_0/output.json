@@ -1,0 +1,69 @@
+{
+    "features": [
+        "LabelEncoding",
+        "NumericFeatures",
+        "IntensityFeatures",
+        "IntensityDiffFeatures"
+    ],
+    "data_type": {
+        "target": "target"
+    },
+    "cv": {
+        "n_splits": 2,
+        "shuffle": true,
+        "random_state": 71
+    },
+    "adversarial_validation": {
+        "lgb_model_params": {
+            "objective": "binary",
+            "metric": "auc",
+            "boosting": "gbdt",
+            "max_depth": 5,
+            "num_leaves": 50,
+            "learning_rate": 0.1,
+            "colsample_bytree": 0.7,
+            "subsample": 0.1,
+            "subsample_freq": 1,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "lgb_train_params": {
+            "num_boost_round": 1000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 100
+        }
+    },
+    "model": {
+        "name": "1dcnn",
+        "model_params": {
+            "lr": 0.001,
+            "epochs": 2,
+            "batch_size": 128,
+            "patience": 5
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "./configs/model_1dcnn_0.json",
+        "debug": false
+    },
+    "model_output_dir": "data/output/model_1dcnn_0",
+    "evals_result": {
+        "n_data": 7436,
+        "n_features": 538,
+        "oof_score": 0.0253709267351594,
+        "cv_score": {
+            "cv1": 0.023475012298803066,
+            "cv2": 0.021418263538464516
+        },
+        "best_iteration": 0.0
+    }
+}
