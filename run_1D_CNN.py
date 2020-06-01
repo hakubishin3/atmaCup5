@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-seed_everything(71)
+seed_everything(71, gpu_mode=True)
 
 
 model_map = {

@@ -50,7 +50,6 @@ class DataGenerator(Sequence):
             _x = self._x[index]
             _y = self._y[index]
             _x = self.cyclic_shift(_x, self._cyclic_shift__alpha)
-            #_x = self.skew(_x, self.skew__skew)
             #_x, _y = self.mixup(_x, _y, self._x[indexes_mixup[i_mixup]], self._y[indexes_mixup[i_mixup]])
 
             batch_x.append(_x)
@@ -103,9 +102,9 @@ class Model_1DCNN(Base_Model):
         meta_cols = [c for c in x_trn.columns if c not in wv_cols]
 
         signal_trn = x_trn[wv_cols].values.reshape(-1, 512, 1)
-        meta_trn = x_trn[meta_cols].fillna(0).values
+        meta_trn = x_trn[meta_cols].values
         signal_val = x_val[wv_cols].values.reshape(-1, 512, 1)
-        meta_val = x_val[meta_cols].fillna(0).values
+        meta_val = x_val[meta_cols].values
 
         pr_auc = AUC(curve='PR', num_thresholds=10000, name="pr_auc")
         cnn_model_params = self.params["model_params"]
