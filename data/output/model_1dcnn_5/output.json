@@ -1,0 +1,73 @@
+{
+    "features": [
+        "LabelEncoding",
+        "NumericFeatures",
+        "IntensityFeatures",
+        "IntensityDiffFeatures"
+    ],
+    "data_type": {
+        "target": "target"
+    },
+    "cv": {
+        "n_splits": 5,
+        "shuffle": true,
+        "random_state": 71
+    },
+    "adversarial_validation": {
+        "lgb_model_params": {
+            "objective": "binary",
+            "metric": "auc",
+            "boosting": "gbdt",
+            "max_depth": 5,
+            "num_leaves": 50,
+            "learning_rate": 0.1,
+            "colsample_bytree": 0.7,
+            "subsample": 0.1,
+            "subsample_freq": 1,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "lgb_train_params": {
+            "num_boost_round": 1000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 100
+        }
+    },
+    "model": {
+        "name": "1dcnn",
+        "model_params": {
+            "lr": 0.0001,
+            "epochs": 200,
+            "batch_size": 64,
+            "patience": 20,
+            "cyclic_shift__alpha": 0.1
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "configs/model_1dcnn_5.json",
+        "debug": false
+    },
+    "model_output_dir": "data/output/model_1dcnn_5",
+    "evals_result": {
+        "n_data": 7436,
+        "n_features": 538,
+        "oof_score": 0.9076186004425085,
+        "cv_score": {
+            "cv1": 0.9215256871485458,
+            "cv2": 0.8824531142882479,
+            "cv3": 0.9078827444292118,
+            "cv4": 0.9168711190194779,
+            "cv5": 0.9382234259483646
+        },
+        "best_iteration": 0.0
+    }
+}
