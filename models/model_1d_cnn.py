@@ -49,14 +49,32 @@ class DataGenerator(Sequence):
         for index in indexes:
             _x = self._x[index]
             _y = self._y[index]
-            _x = self.cyclic_shift(_x, self._cyclic_shift__alpha)
-            #_x, _y = self.mixup(_x, _y, self._x[indexes_mixup[i_mixup]], self._y[indexes_mixup[i_mixup]])
 
+            fitting = self.input["input_fitting"][index]
+            peak_position = _x.argmax()
+            window_size = 128
+            
+            if peak_position - window_size//2 < 0:
+                min_position = 0
+                max_position = window_size - min_position
+            elif peak_position + window_size//2 > 511:
+                max_position = 511
+                min_position = max_position - window_size
+            else:
+                max_position = peak_position + window_size//2
+                min_position = peak_position - window_size//2
+
+            _x = _x[min_position:max_position]
+
+            if self._cyclic_shift__alpha > 0:
+                if np.random.rand() >= 0.5:
+                    _x = _x[::-1]
             batch_x.append(_x)
             batch_y.append(_y)
-            #i_mixup += 1
 
             batch_meta_x.append(self.input["input_meta"][index])
+            #_x, _y = self.mixup(_x, _y, self._x[indexes_mixup[i_mixup]], self._y[indexes_mixup[i_mixup]])
+            #i_mixup += 1
 
         return (
             {
@@ -74,12 +92,19 @@ class DataGenerator(Sequence):
         return len(self._y) // self._batch_size
 
     @staticmethod
-    def cyclic_shift(x, alpha=0.5):
-        s = np.random.uniform(0, alpha)
-        part = int(len(x) * s)
+    def cyclic_shift(x, alpha=0.5, part=None):
+        if part is None:
+            s = np.random.uniform(0, alpha)
+            part = int(len(x) * s)
+
         x_ = x[:part, :]
         _x = x[-len(x) + part:, :]
-        return np.concatenate([_x, x_], axis=0)
+
+        pos_neg = np.random.rand()
+        if pos_neg >= 0.5:
+            return np.concatenate([_x, x_], axis=0), part
+        else:
+            return np.concatenate([x_, _x], axis=0), part
 
     @staticmethod
     def skew(x, skew=0.05):
@@ -99,18 +124,21 @@ class Model_1DCNN(Base_Model):
         self.num_fe = len(x_trn.columns)
 
         wv_cols = [f"wavelength_{i}" for i in range(512)]
-        meta_cols = [c for c in x_trn.columns if c not in wv_cols]
+        wv_fit_cols = [f"fitting_wavelength_{i}" for i in range(512)]
+        meta_cols = [c for c in x_trn.columns if c not in wv_cols + wv_fit_cols]
 
         signal_trn = x_trn[wv_cols].values.reshape(-1, 512, 1)
+        fitting_trn = x_trn[wv_fit_cols].values.reshape(-1, 512, 1)
         meta_trn = x_trn[meta_cols].values
         signal_val = x_val[wv_cols].values.reshape(-1, 512, 1)
+        fitting_val = x_val[wv_fit_cols].values.reshape(-1, 512, 1)
         meta_val = x_val[meta_cols].values
 
         pr_auc = AUC(curve='PR', num_thresholds=10000, name="pr_auc")
         cnn_model_params = self.params["model_params"]
         optimizer = optimizers.Adam(lr=cnn_model_params["lr"])
         model = build_model(
-            signal_size=signal_trn.shape[1:],
+            signal_size=(128,1),
             meta_size=meta_trn.shape[1],
             output_size=1
         )
@@ -125,11 +153,22 @@ class Model_1DCNN(Base_Model):
         trn_gen = DataGenerator(
             {
                 "input_signal": signal_trn,
+                "input_fitting": fitting_trn,
                 "input_meta": meta_trn,
             },
             y_trn,
             batch_size=cnn_model_params["batch_size"],
             cyclic_shift__alpha=cnn_model_params["cyclic_shift__alpha"]
+        )
+
+        val_gen = DataGenerator(
+            {
+                "input_signal": signal_val,
+                "input_fitting": fitting_val,
+                "input_meta": meta_val,
+            },
+            y_val,
+            batch_size=cnn_model_params["batch_size"],
         )
 
         history = model.fit(
@@ -148,7 +187,7 @@ class Model_1DCNN(Base_Model):
                     mode="max"
                 )
             ],
-            validation_data=({"input_signal": signal_val, "input_meta": meta_val}, y_val),
+            validation_data=val_gen,
             verbose=1,
             shuffle=True,
         )
@@ -157,13 +196,34 @@ class Model_1DCNN(Base_Model):
 
     def predict(self, x):
         wv_cols = [f"wavelength_{i}" for i in range(512)]
-        meta_cols = [c for c in x.columns if c not in wv_cols]
+        wv_fit_cols = [f"fitting_wavelength_{i}" for i in range(512)]
+        meta_cols = [c for c in x.columns if c not in wv_cols + wv_fit_cols]
 
         signal = x[wv_cols].values.reshape(-1, 512, 1)
+        fitting = x[wv_fit_cols].values.reshape(-1, 512, 1)
         meta = x[meta_cols].values
 
+        signal_trm = []
+        window_size = 128
+        for i in range(len(signal)):
+            signal_row = signal[i]
+            fitting_row = fitting[i]
+            peak_position = signal_row.argmax()
+
+            if peak_position - window_size//2 < 0:
+                min_position = 0
+                max_position = window_size - min_position
+            elif peak_position + window_size//2 > 511:
+                max_position = 511
+                min_position = max_position - window_size
+            else:
+                max_position = peak_position + window_size//2
+                min_position = peak_position - window_size//2
+
+            signal_trm.append(signal_row[min_position:max_position])
+
         return self.model.predict({
-                "input_signal": signal,
+                "input_signal": np.asarray(signal_trm),
                 "input_meta": meta,
             }).reshape(-1)
 
