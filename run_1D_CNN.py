@@ -78,12 +78,25 @@ def main():
     input_dir = pathlib.Path(config['dataset']['input_directory'])
     train = pd.read_csv(input_dir / 'train.csv')
     test = pd.read_csv(input_dir / 'test.csv')
-    spectrum = pd.read_csv(input_dir / 'spectrum_stack.csv')
-    wv_cols = [c for c in spectrum.columns if c.find("wavelength_") != -1]
 
-    spectrum[wv_cols] = spectrum[wv_cols].values / np.std(spectrum[wv_cols].values, axis=1, keepdims=True)
-    train_spectrum = pd.merge(train, spectrum, on="spectrum_filename", how="left")[wv_cols]
-    test_spectrum = pd.merge(test, spectrum, on="spectrum_filename", how="left")[wv_cols]
+    spectrum = pd.read_csv(input_dir / 'spectrum_stack.csv')
+    spectrum_fitting = pd.read_csv(input_dir / 'spectrum_fitting_stack.csv')
+    wv_cols = [f"wavelength_{i}" for i in range(512)]
+    wv_fit_cols = [f"fitting_wavelength_{i}" for i in range(512)]
+
+    train_spectrum = pd.merge(train, spectrum, on="spectrum_filename", how="left")
+    test_spectrum = pd.merge(test, spectrum, on="spectrum_filename", how="left")
+    train_spectrum = pd.merge(train_spectrum, spectrum_fitting, on="spectrum_filename", how="left")
+    test_spectrum = pd.merge(test_spectrum, spectrum_fitting, on="spectrum_filename", how="left")
+
+    train_std = np.std(train_spectrum[wv_cols].values, axis=1, keepdims=True)
+    test_std = np.std(test_spectrum[wv_cols].values, axis=1, keepdims=True)
+    train_spectrum[wv_cols] = train_spectrum[wv_cols].values / train_std
+    test_spectrum[wv_cols] = test_spectrum[wv_cols].values / test_std
+
+    spectrum_cols = wv_cols + wv_fit_cols
+    train_spectrum = train_spectrum[spectrum_cols]
+    test_spectrum = test_spectrum[spectrum_cols]
 
     # Get target values
     target_column = config['data_type']['target']
@@ -120,7 +133,8 @@ def main():
 
     x_train = pd.concat([x_train, train_spectrum], axis=1)
     x_test = pd.concat([x_test, test_spectrum], axis=1)
-    logger.debug(f'number of features with spec: {x_train.shape}')
+    logger.debug(f'number of features with spec in train: {x_train.shape}')
+    logger.debug(f'number of features with spec in test: {x_test.shape}')
 
     # =========================================
     # === Train model and predict
