@@ -2,6 +2,7 @@
 name = “atmacup5”
 version = “0.1.0"
 description = “”
+authors = [“hakubishin3 <hakubishin3@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = “^3.7”
